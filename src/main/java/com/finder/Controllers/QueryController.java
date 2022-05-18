@@ -1,4 +1,4 @@
-package com.finder.Controllers;
+package com.finder.prod.Controllers;
 
 import com.finder.prod.Services.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
