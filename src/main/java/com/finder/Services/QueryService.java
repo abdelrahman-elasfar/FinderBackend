@@ -60,7 +60,7 @@ public class QueryService {
             }
         }
         MongoCollection<Document> webpagesCollection = db.getCollection("webpages");
-        long docCount =  webpagesCollection.countDocuments();
+        long docCount =  webpagesCollection.countDocuments(Filters.eq("status", 3));
 
 
         List<Webpage> websites = Ranker.rank(queryWords, docCount);
