@@ -2,6 +2,9 @@ package com.finder.prod.Models;
 
 
 import java.util.ArrayList;
+
+import com.finder.prod.Models.Webpage;
+
 import org.springframework.data.annotation.Id;
 
 
@@ -13,10 +16,10 @@ public class Word {
     
     private String word;
 
-    private ArrayList<Website> metadata;
+    private ArrayList<Webpage> metadata;
 
 
-    public Word(String _id, int df, String word, ArrayList<Website> metadata){
+    public Word(String _id, int df, String word, ArrayList<Webpage> metadata){
         this._id = _id;
         this.df = df;
         this.word = word;
@@ -47,11 +50,11 @@ public class Word {
         this.df = df;
     }
 
-    public ArrayList<Website> getMetadata() {
+    public ArrayList<Webpage> getMetadata() {
         return metadata;
     }
 
-    public void addMetadata(Website website) {
+    public void addMetadata(Webpage website) {
         this.metadata.add(website);
     }
 
