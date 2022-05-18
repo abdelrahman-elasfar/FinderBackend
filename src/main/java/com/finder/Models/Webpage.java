@@ -11,7 +11,8 @@ public class Webpage {
 
     public String url;
 
-    Webpage(int termFreq, int titleFreq, int textFreq, int headingsFreq, int normalFreq, String url){
+    public Webpage(int termFreq, int titleFreq, int textFreq, int headingsFreq, int normalFreq, String url)
+    {
         this.termFreq = termFreq;
         this.titleFreq = titleFreq;
         this.textFreq = textFreq;

@@ -55,7 +55,9 @@ public class QueryService {
         for (int i = 0 ; i < rawWords.length ; i++) {
             rawWords[i] = Stemmer.stem(rawWords[i]);
             Word word = mongoOperations.findOne( Query.query(Criteria.where("word").is(rawWords[i])), Word.class, "indexer");
-            queryWords.add(word);
+            if (word != null) {
+                queryWords.add(word);
+            }
         }
         MongoCollection<Document> webpagesCollection = db.getCollection("webpages");
         long docCount =  webpagesCollection.countDocuments();
@@ -78,20 +80,15 @@ public class QueryService {
             }
         }
            
-            if (!websitesPaginated.isEmpty()) {
-                return new ResponseEntity<>(websitesPaginated, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(null, HttpStatus.OK);
-            }
+            return new ResponseEntity<>(websitesPaginated, HttpStatus.OK);
             
         }
 
 
     public ResponseEntity<?> getSuggestions(String query){
         
-
         List<Suggestion> suggestions = mongoOperations.find( Query.query(Criteria.where("query").regex('^'+query)), Suggestion.class, "suggestions");
-        
+
         // Sort suggestions by frequency
         Collections.sort(suggestions, new Comparator<Suggestion>() {
             @Override
@@ -122,23 +119,24 @@ class Stemmer{
 }
 
 class Ranker{
-    public static ArrayList<Webpage> webpages = new ArrayList<>();
-    public static ArrayList<Webpage> rank (List<Word> queryWords, long docCount)
+
+    public static ArrayList<Webpage>  rank (List<Word> queryWords, long docCount)
     {
-        // Create a dictionary with all the urls that where the query words appeared
+        ArrayList<Webpage> webpages = new ArrayList<>();
+        // Create a list with all the urls that where the query words appeared
         for(int i=0; i< queryWords.size(); i++) {
             // Create an array that has the documents of each word
-            webpages.addAll(queryWords.get(i).getMetadata());
+            ArrayList<Webpage> webpagesOfWord = queryWords.get(i).getMetadata();
+            
             // Calculate IDF for each word
             double df = Double.parseDouble(String.valueOf(queryWords.get(i).getDf()));
             double idf = Math.log10(docCount/df);
-            // double idf = Math.log(docCount/df);
 
             // Loop over documents and Calculate TF for each word,document
-            for(Webpage webpage: webpages){
+            for(Webpage webpage: webpagesOfWord){
+
                 // Calculate TF
                 double tf = webpage.termFreq;
-                double score = webpage.score;
 
                 // Calculate score multiplier based on location of appearance
                 double multiplier = 1;
@@ -147,9 +145,38 @@ class Ranker{
                     multiplier *= (1 + 0.25 * webpage.headingsFreq);
                 }
 
-                webpage.score = webpage.score + idf * tf * multiplier;
-        }
+                int index = findWebpage(webpage.url, webpages);
+                double oldScore = 0.0;
+                if( index != -1)
+                {
+                oldScore = webpages.get(index).score;
+                webpage.score = oldScore + idf * tf * multiplier;
+                webpages.set(index, webpage);
+                }
+                else
+                {
+                    webpage.score = idf * tf * multiplier;
+                    webpages.add(webpage);
+                }
     }
-    return webpages;
 }
+    // Sort webpages by score
+    Collections.sort(webpages, new Comparator<Webpage>() {
+        @Override
+        public int compare(Webpage lhs, Webpage rhs) {
+            return lhs.score > rhs.score ? -1 : (lhs.score < rhs.score) ? 1 : 0;
+        }
+    });
+    return webpages;
+    }
+
+    public static int findWebpage(String url, ArrayList<Webpage> webpages) {
+        for(Webpage webpage : webpages) {
+            if(webpage.url.equals(url)) {
+                // return index of iteration
+                return webpages.indexOf(webpage);
+            }
+        }
+        return -1;
+    }
 }

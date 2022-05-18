@@ -1,5 +1,8 @@
 package com.finder.prod.Controllers;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 import com.finder.prod.Services.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,7 @@ public class QueryController {
     public ResponseEntity<?> getAllWebsites(@PathVariable("query") String query, @RequestParam("pageSize") int pageSize, @RequestParam("pageNum") int pageNum) {
         System.out.println("PAGE NUMBER : "+pageNum);
         System.out.println("PAGE SIZE : "+pageSize);
+        System.out.println("QUERY : "+query);
         query = query.toLowerCase();
         
         return queryService.getAllWebsitesByQuery(query, pageSize, pageNum);       

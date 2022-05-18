@@ -2,10 +2,10 @@ package com.finder.prod.Models;
 
 public class Suggestion {
     public int frequency;
-    public String word;
+    public String query;
     
-    Suggestion(int frequency, String word){
+    Suggestion(int frequency, String query){
         this.frequency = frequency;
-        this.word = word;
+        this.query = query;
     }
 }
