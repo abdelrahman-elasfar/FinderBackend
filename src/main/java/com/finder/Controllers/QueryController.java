@@ -21,7 +21,7 @@ public class QueryController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{query}")
-    public ResponseEntity<?> getAllReservations(@PathVariable("query") String query, @RequestParam("pageSize") int pageSize, @RequestParam("pageNum") int pageNum) {
+    public ResponseEntity<?> getAllWebsites(@PathVariable("query") String query, @RequestParam("pageSize") int pageSize, @RequestParam("pageNum") int pageNum) {
         System.out.println("PAGE NUMBER : "+pageNum);
         System.out.println("PAGE SIZE : "+pageSize);
         query = query.toLowerCase();

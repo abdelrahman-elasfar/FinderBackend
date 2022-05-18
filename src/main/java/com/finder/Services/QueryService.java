@@ -8,7 +8,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.finder.prod.Models.Suggestion;
 import com.finder.prod.Models.Webpage;
-import com.finder.prod.Models.Website;
 import com.finder.prod.Models.Word;
 
 import org.bson.Document;
@@ -123,15 +122,15 @@ class Stemmer{
 }
 
 class Ranker{
+    public static ArrayList<Webpage> webpages = new ArrayList<>();
     public static ArrayList<Webpage> rank (List<Word> queryWords, long docCount)
     {
         // Create a dictionary with all the urls that where the query words appeared
-        for(int i=0; i< queryWords.length; i++) {
+        for(int i=0; i< queryWords.size(); i++) {
             // Create an array that has the documents of each word
-            ArrayList<Webpage> webpages = queryWords[i].getMetadata();
-
+            webpages.addAll(queryWords.get(i).getMetadata());
             // Calculate IDF for each word
-            double df = Double.parseDouble(String.valueOf(queryWords[i].getDf()));
+            double df = Double.parseDouble(String.valueOf(queryWords.get(i).getDf()));
             double idf = Math.log10(docCount/df);
             // double idf = Math.log(docCount/df);
 
@@ -150,7 +149,7 @@ class Ranker{
 
                 webpage.score = webpage.score + idf * tf * multiplier;
         }
-        return webpages;
     }
+    return webpages;
 }
 }
