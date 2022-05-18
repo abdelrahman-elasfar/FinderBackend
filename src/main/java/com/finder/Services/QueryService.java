@@ -40,7 +40,7 @@ public class QueryService {
 
         MongoClient mongoClient = MongoClients.create("mongodb+srv://admin:admin@searchengine.g39y2.mongodb.net/SearchEngine?retryWrites=true&w=majority");
         MongoDatabase db = mongoClient.getDatabase("SearchEngine");
-        MongoCollection<Document> suggestionsCollection = db.getCollection("Suggestions");
+        MongoCollection<Document> suggestionsCollection = db.getCollection("suggestions");
         Document updateResult = suggestionsCollection.findOneAndUpdate(Filters.eq("query", query), Updates.inc("frequency", 1));
         if(updateResult==null){
               
@@ -90,7 +90,7 @@ public class QueryService {
     public ResponseEntity<?> getSuggestions(String query){
         
 
-        List<Suggestion> suggestions = mongoOperations.find( Query.query(Criteria.where("query").regex('^'+query)), Suggestion.class, "Suggestions");
+        List<Suggestion> suggestions = mongoOperations.find( Query.query(Criteria.where("query").regex('^'+query)), Suggestion.class, "suggestions");
         
         // Sort suggestions by frequency
         Collections.sort(suggestions, new Comparator<Suggestion>() {
